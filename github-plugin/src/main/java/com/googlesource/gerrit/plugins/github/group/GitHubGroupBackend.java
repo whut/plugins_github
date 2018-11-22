@@ -32,6 +32,7 @@ import com.google.gerrit.server.project.ProjectState;
 import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
@@ -112,10 +113,10 @@ public class GitHubGroupBackend implements GroupBackend {
 
   @Override
   public GroupMembership membershipsOf(IdentifiedUser user) {
-    String username = user.getUserName();
-    if (Strings.isNullOrEmpty(username)) {
+    Optional<String> username = user.getUserName();
+    if (!username.isPresent()) {
       return GroupMembership.EMPTY;
     }
-    return ghMembershipProvider.get(username);
+    return ghMembershipProvider.get(username.get());
   }
 }

@@ -32,6 +32,7 @@ import com.googlesource.gerrit.plugins.github.oauth.GitHubLogin;
 import com.googlesource.gerrit.plugins.github.oauth.UserScopedProvider;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,7 +107,7 @@ public class GitHubGroupsCache {
       @Override
       protected void configure() {
         persist(ORGS_CACHE_NAME, String.class, OrganizationStructure.class)
-            .expireAfterWrite(GROUPS_CACHE_TTL_MINS, MINUTES)
+            .expireAfterWrite(Duration.ofMinutes(GROUPS_CACHE_TTL_MINS))
             .loader(OrganisationLoader.class);
         bind(GitHubGroupsCache.class);
       }
@@ -134,7 +135,7 @@ public class GitHubGroupsCache {
   }
 
   Set<String> getOrganizationsForCurrentUser() throws ExecutionException {
-    return orgTeamsByUsername.get(userProvider.get().getUserName()).keySet();
+    return orgTeamsByUsername.get(userProvider.get().getUserName().get()).keySet();
   }
 
   Set<String> getTeamsForUser(String organizationName, String username) {
@@ -155,7 +156,7 @@ public class GitHubGroupsCache {
   }
 
   Set<String> getTeamsForCurrentUser(String organizationName) {
-    return getTeamsForUser(organizationName, userProvider.get().getUserName());
+    return getTeamsForUser(organizationName, userProvider.get().getUserName().get());
   }
 
   public Set<UUID> getGroupsForUser(String username) {

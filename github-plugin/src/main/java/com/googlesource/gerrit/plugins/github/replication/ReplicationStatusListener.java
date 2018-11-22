@@ -14,7 +14,7 @@
 
 package com.googlesource.gerrit.plugins.github.replication;
 
-import com.google.gerrit.common.EventListener;
+import com.google.gerrit.server.events.EventListener;
 import com.google.gerrit.reviewdb.client.Project.NameKey;
 import com.google.gerrit.server.events.Event;
 import com.google.gerrit.server.events.RefEvent;

@@ -24,9 +24,9 @@ import com.google.gerrit.reviewdb.client.AccountGroup;
 import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.reviewdb.client.Project.NameKey;
 import com.google.gerrit.server.account.GroupBackend;
-import com.google.gerrit.server.git.MetaDataUpdate;
-import com.google.gerrit.server.git.MetaDataUpdate.User;
-import com.google.gerrit.server.git.ProjectConfig;
+import com.google.gerrit.server.git.meta.MetaDataUpdate;
+import com.google.gerrit.server.git.meta.MetaDataUpdate.User;
+import com.google.gerrit.server.project.ProjectConfig;
 import com.google.gerrit.server.project.ProjectCache;
 import com.google.gerrit.server.util.ManualRequestContext;
 import com.google.gerrit.server.util.OneOffRequestContext;
@@ -37,6 +37,7 @@ import com.googlesource.gerrit.plugins.github.GitHubURL;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gerrit.reviewdb.client.BooleanProjectConfig;
 
 public class CreateProjectStep extends ImportStep {
   private static final Logger LOG = LoggerFactory.getLogger(CreateProjectStep.class);
@@ -182,10 +183,10 @@ public class CreateProjectStep extends ImportStep {
     project.setParentName(config.getBaseProject(getRepository().isPrivate()));
     project.setDescription(description);
     project.setSubmitType(SubmitType.MERGE_IF_NECESSARY);
-    project.setUseContributorAgreements(InheritableBoolean.INHERIT);
-    project.setUseSignedOffBy(InheritableBoolean.INHERIT);
-    project.setUseContentMerge(InheritableBoolean.INHERIT);
-    project.setRequireChangeID(InheritableBoolean.INHERIT);
+    project.setBooleanConfig(BooleanProjectConfig.USE_CONTRIBUTOR_AGREEMENTS, InheritableBoolean.INHERIT);
+    project.setBooleanConfig(BooleanProjectConfig.USE_SIGNED_OFF_BY, InheritableBoolean.INHERIT);
+    project.setBooleanConfig(BooleanProjectConfig.USE_CONTENT_MERGE, InheritableBoolean.INHERIT);
+    project.setBooleanConfig(BooleanProjectConfig.REQUIRE_CHANGE_ID, InheritableBoolean.INHERIT);
   }
 
   @Override

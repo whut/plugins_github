@@ -24,15 +24,11 @@ import com.googlesource.gerrit.plugins.github.git.CreateProjectStep;
 import com.googlesource.gerrit.plugins.github.git.GitCloneStep;
 import com.googlesource.gerrit.plugins.github.git.GitHubRepository;
 import com.googlesource.gerrit.plugins.github.git.GitImporter;
-import com.googlesource.gerrit.plugins.github.git.PullRequestImportJob;
 import com.googlesource.gerrit.plugins.github.git.ReplicateProjectStep;
 import com.googlesource.gerrit.plugins.github.notification.WebhookServlet;
 import com.googlesource.gerrit.plugins.github.oauth.GitHubLogin;
 import com.googlesource.gerrit.plugins.github.oauth.PooledHttpClientProvider;
 import com.googlesource.gerrit.plugins.github.oauth.ScopedProvider;
-import com.googlesource.gerrit.plugins.github.replication.RemoteSiteUser;
-import com.googlesource.gerrit.plugins.github.velocity.PluginVelocityRuntimeProvider;
-import com.googlesource.gerrit.plugins.github.velocity.VelocityStaticServlet;
 import com.googlesource.gerrit.plugins.github.velocity.VelocityViewServlet;
 import com.googlesource.gerrit.plugins.github.wizard.VelocityControllerServlet;
 import org.apache.http.client.HttpClient;
@@ -46,8 +42,6 @@ public class GuiceHttpModule extends ServletModule {
 
     bind(new TypeLiteral<ScopedProvider<GitHubLogin>>() {}).to(GitHubLogin.Provider.class);
     bind(new TypeLiteral<ScopedProvider<GitImporter>>() {}).to(GitImporter.Provider.class);
-
-    install(new FactoryModuleBuilder().build(RemoteSiteUser.Factory.class));
 
     install(
         new FactoryModuleBuilder()
@@ -63,16 +57,9 @@ public class GuiceHttpModule extends ServletModule {
             .build(ReplicateProjectStep.Factory.class));
     install(
         new FactoryModuleBuilder()
-            .implement(PullRequestImportJob.class, PullRequestImportJob.class)
-            .build(PullRequestImportJob.Factory.class));
-    install(
-        new FactoryModuleBuilder()
             .implement(GitHubRepository.class, GitHubRepository.class)
             .build(GitHubRepository.Factory.class));
 
-    bind(RuntimeInstance.class)
-        .annotatedWith(Names.named("PluginRuntimeInstance"))
-        .toProvider(PluginVelocityRuntimeProvider.class);
 
     bind(String.class).annotatedWith(GitHubURL.class).toProvider(GitHubURLProvider.class);
 
@@ -80,8 +67,6 @@ public class GuiceHttpModule extends ServletModule {
         .annotatedWith(Exports.named("github"))
         .to(GitHubOAuthServiceProvider.class);
 
-    serve("*.css", "*.js", "*.png", "*.jpg", "*.woff", "*.gif", "*.ttf")
-        .with(VelocityStaticServlet.class);
     serve("*.gh").with(VelocityControllerServlet.class);
     serve("/webhook").with(WebhookServlet.class);
 
